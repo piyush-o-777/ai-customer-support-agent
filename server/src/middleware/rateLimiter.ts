@@ -7,3 +7,11 @@ export const authRateLimiter = rateLimit({
   legacyHeaders: false,
   message: { message: 'Too many requests, please try again later' },
 });
+
+export const chatRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many messages, please slow down' },
+});
