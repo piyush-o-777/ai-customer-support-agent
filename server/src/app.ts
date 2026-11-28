@@ -4,11 +4,13 @@ import { env } from './config/env';
 import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import { authRateLimiter } from './middleware/rateLimiter';
+import { requestLogger } from './middleware/requestLogger';
 
 const app = express();
 
 app.use(cors({ origin: env.clientUrl, credentials: true }));
 app.use(express.json());
+app.use(requestLogger);
 
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({ status: 'ok' });

@@ -2,12 +2,21 @@ import { Response } from 'express';
 import * as chatService from '../services/chatService';
 import { AuthenticatedRequest } from '../types/auth.types';
 import { HttpError } from '../utils/httpError';
+import { logger } from '../utils/logger';
 
 const handleChatError = (res: Response, err: unknown): Response => {
   if (err instanceof HttpError) {
     return res.status(err.status).json({ message: err.message });
   }
+  logger.error('Unhandled chat error', {
+    error: err instanceof Error ? err.message : 'Unknown error',
+  });
   return res.status(500).json({ message: 'Internal server error' });
+};
+
+const writeSseEvent = (res: Response, event: string, data: unknown): void => {
+  res.write(`event: ${event}\n`);
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
 };
 
 export const createConversation = async (
@@ -67,6 +76,32 @@ export const sendMessage = async (
     return res.status(201).json(result);
   } catch (err) {
     return handleChatError(res, err);
+  }
+};
+
+export const sendMessageStream = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
+  if (!req.userId) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  try {
+    const result = await chatService.sendMessageStream(req.params.id, req.userId, req.body, {
+      onUserMessage: (userMessage) => writeSseEvent(res, 'userMessage', { userMessage }),
+      onChunk: (content) => writeSseEvent(res, 'chunk', { content }),
+    });
+    writeSseEvent(res, 'done', result);
+    res.end();
+  } catch (err) {
+    const message = err instanceof HttpError ? err.message : 'Internal server error';
+    writeSseEvent(res, 'error', { message });
+    res.end();
   }
 };
 

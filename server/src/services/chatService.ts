@@ -11,7 +11,7 @@ import {
   SendMessageResponse,
 } from '../types/chat.types';
 import { HttpError } from '../utils/httpError';
-import { generateReply } from './aiService';
+import { generateReply, generateReplyStream } from './aiService';
 
 const DEFAULT_TITLE = 'New Conversation';
 const MAX_TITLE_LENGTH = 60;
@@ -82,11 +82,11 @@ export const getMessages = async (
   };
 };
 
-export const sendMessage = async (
+const prepareUserTurn = async (
   conversationId: string,
   userId: string,
   input: SendMessageInput = {}
-): Promise<SendMessageResponse> => {
+): Promise<{ conversation: IConversation; userMessage: IMessage; history: AIMessage[] }> => {
   if (typeof input.content !== 'string' || !input.content.trim()) {
     throw new HttpError(400, 'Message content is required');
   }
@@ -109,6 +109,19 @@ export const sendMessage = async (
   const history: AIMessage[] = recentMessages
     .reverse()
     .map((msg) => ({ role: msg.role, content: msg.content }));
+  return { conversation, userMessage, history };
+};
+
+export const sendMessage = async (
+  conversationId: string,
+  userId: string,
+  input: SendMessageInput = {}
+): Promise<SendMessageResponse> => {
+  const { conversation, userMessage, history } = await prepareUserTurn(
+    conversationId,
+    userId,
+    input
+  );
   const replyText = await generateReply(history);
   const assistantMessage = await Message.create({
     conversationId: conversation._id,
@@ -120,6 +133,37 @@ export const sendMessage = async (
   await conversation.save();
   return {
     userMessage: formatMessage(userMessage),
+    assistantMessage: formatMessage(assistantMessage),
+  };
+};
+
+export const sendMessageStream = async (
+  conversationId: string,
+  userId: string,
+  input: SendMessageInput = {},
+  callbacks: {
+    onUserMessage: (message: PublicMessage) => void;
+    onChunk: (chunk: string) => void;
+  }
+): Promise<SendMessageResponse> => {
+  const { conversation, userMessage, history } = await prepareUserTurn(
+    conversationId,
+    userId,
+    input
+  );
+  const formattedUserMessage = formatMessage(userMessage);
+  callbacks.onUserMessage(formattedUserMessage);
+  const replyText = await generateReplyStream(history, callbacks.onChunk);
+  const assistantMessage = await Message.create({
+    conversationId: conversation._id,
+    userId,
+    role: 'assistant',
+    content: replyText,
+  });
+  conversation.updatedAt = new Date();
+  await conversation.save();
+  return {
+    userMessage: formattedUserMessage,
     assistantMessage: formatMessage(assistantMessage),
   };
 };

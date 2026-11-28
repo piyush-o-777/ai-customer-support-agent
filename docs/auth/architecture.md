@@ -1,4 +1,4 @@
-# Authentication Feature — Design Document
+# Authentication Feature - Design Document
 
 ## 1. Problem Statement
 Our AI Customer Support Agent needs a secure, stateless authentication system so that only registered users can access the chat APIs. User passwords must never be stored in plaintext, every protected API request must reliably identify the logged-in users to keep chat histories isolated per user, and the system must defend the user's chat data and history as well. 
@@ -31,7 +31,7 @@ Our AI Customer Support Agent needs a secure, stateless authentication system so
 * `is_active` (whether user's account is active or deactivated)
 
 
-### AuthTokenPayload (Ephemeral, encoded inside JWT — not stored in DB)
+### AuthTokenPayload (Ephemeral, encoded inside JWT, not stored in DB)
 
 * `userId` (`String`): Stringified `User.id`.
 * `iat` (`Number`): issued at 
@@ -60,8 +60,8 @@ Our AI Customer Support Agent needs a secure, stateless authentication system so
 
 ### What We Are Going to Store and Why
 * **MongoDB (`users`):** `name`, unique normalized `email`, salted `bcrypt` `passwordHash` (never plaintext), timestamps.
-* **JWT (client-side):** Minimal payload (`userId`, `iat`, `exp`) — signed, not encrypted.
-* **Not in DB:** Sessions/tokens — keeps auth stateless with zero DB lookups per request.
+* **JWT (client-side):** Minimal payload (`userId`, `iat`, `exp`), signed and not encrypted.
+* **Not in DB:** Sessions/tokens, keeping auth stateless with zero DB lookups per request.
 
 ### Pros and Cons for Production
 * **Pros:**

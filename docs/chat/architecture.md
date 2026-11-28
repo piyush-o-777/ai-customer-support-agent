@@ -1,4 +1,4 @@
-# Chat Feature — Design Document
+# Chat Feature - Design Document
 
 ## 1. Problem Statement
 Authenticated users need an AI-powered customer support chat interface with persistent, user-isolated conversation history backed by MongoDB and Hugging Face inference.
@@ -18,15 +18,15 @@ Authenticated users need an AI-powered customer support chat interface with pers
 
 ### Conversation
 * `id` (database unique key)
-* `userId` (`ObjectId`, indexed ref → `User`)
+* `userId` (`ObjectId`, indexed ref to `User`)
 * `title` (`String`, default `"New Conversation"`, auto-set from first user prompt)
 * `createdAt` (timestamp)
 * `updatedAt` (timestamp)
 
 ### Message
 * `id` (database unique key)
-* `conversationId` (`ObjectId`, indexed ref → `Conversation`)
-* `userId` (`ObjectId`, indexed ref → `User`)
+* `conversationId` (`ObjectId`, indexed ref to `Conversation`)
+* `userId` (`ObjectId`, indexed ref to `User`)
 * `role` (`"user" | "assistant"`)
 * `content` (`String`, required)
 * `createdAt` (timestamp)
@@ -34,8 +34,8 @@ Authenticated users need an AI-powered customer support chat interface with pers
 ---
 
 ## 4. Entities Relations
-* One `User` owns zero or many `Conversation` documents (`Conversation.userId → User._id`).
-* One `Conversation` contains zero or many `Message` documents (`Message.conversationId → Conversation._id`).
+* One `User` owns zero or many `Conversation` documents (`Conversation.userId` references `User._id`).
+* One `Conversation` contains zero or many `Message` documents (`Message.conversationId` references `Conversation._id`).
 * Separate `messages` collection avoids MongoDB's 16 MB document limit and enables fast pagination.
 * Security boundary: All `/chat/*` routes require `authMiddleware` and derive `userId` exclusively from `req.userId`.
 

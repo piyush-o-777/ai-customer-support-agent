@@ -11,6 +11,7 @@ router.post('/conversations', chatController.createConversation);
 router.get('/conversations', chatController.listConversations);
 router.get('/conversations/:id/messages', chatController.getMessages);
 router.post('/conversations/:id/messages', chatRateLimiter, chatController.sendMessage);
+router.post('/conversations/:id/messages/stream', chatRateLimiter, chatController.sendMessageStream);
 router.delete('/conversations/:id', chatController.deleteConversation);
 
 export default router;
