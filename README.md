@@ -11,8 +11,7 @@ A full-stack AI-powered customer support chat application with JWT authenticatio
 - **Logging & Docker:** Structured HTTP/error logging and multi-stage Docker + Docker Compose setup.
 
 ## Live Demo
-- **Frontend:** _(Add link after deployment)_
-- **Backend API:** _(Add link after deployment)_
+- **Live App:** https://ai-customer-support-agent-95279737503.us-central1.run.app
 
 ## Tech Stack
 - **Frontend:** React, Vite, TypeScript (`.tsx`), Material UI, Axios
@@ -20,12 +19,13 @@ A full-stack AI-powered customer support chat application with JWT authenticatio
 - **Database:** MongoDB (Mongoose)
 - **Authentication:** JWT + bcrypt
 - **AI Provider:** OpenAI-compatible API (Google Gemini / Hugging Face / Groq / OpenRouter)
-- **DevOps:** Docker & Docker Compose
+- **DevOps:** Docker, Docker Compose & Google Cloud Run
 
 ## Project Structure
 - `client/`: React + TypeScript frontend
 - `server/`: Node.js + Express + TypeScript REST/SSE API
 - `docs/`: Architecture & design notes
+- `Dockerfile`: Unified production container for Cloud Run
 - `docker-compose.yml`: Multi-container local setup
 
 ## Environment Variables
