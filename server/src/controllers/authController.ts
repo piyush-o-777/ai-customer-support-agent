@@ -2,6 +2,7 @@ import { Response } from 'express';
 import * as authService from '../services/authService';
 import { AuthenticatedRequest } from '../types/auth.types';
 import { HttpError } from '../utils/httpError';
+import { logger } from '../utils/logger';
 
 const handleAuthError = (res: Response, err: unknown): Response => {
   if (typeof err === 'object' && err !== null && 'code' in err && (err as { code?: number }).code === 11000) {
@@ -10,6 +11,9 @@ const handleAuthError = (res: Response, err: unknown): Response => {
   if (err instanceof HttpError) {
     return res.status(err.status).json({ message: err.message });
   }
+  logger.error('Unhandled auth error', {
+    error: err instanceof Error ? err.message : 'Unknown error',
+  });
   return res.status(500).json({ message: 'Internal server error' });
 };
 

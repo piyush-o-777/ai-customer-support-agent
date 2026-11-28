@@ -1,29 +1,37 @@
 # AI Customer Support Agent
 
-A full-stack AI-powered customer support chat application with JWT authentication, user-scoped chat history in MongoDB, and Docker support.
+A full-stack AI-powered customer support chat application with JWT authentication, real-time streaming responses, user-scoped chat history in MongoDB, and Docker support.
+
+## Features
+- **Stateless JWT Auth:** Signup, login, logout, session restore (`/auth/me`), bcrypt password hashing, and rate limiting.
+- **Live Streaming AI Chat:** Real-time SSE word-by-word responses with Markdown rendering and OpenAI-compatible AI provider support (Gemini, Hugging Face, Groq, OpenRouter).
+- **Chat History Management:** Persistent MongoDB conversations with auto-titling, live search, date filters (`All`, `Today`, `7d`, `30d`), and single/bulk delete.
+- **Cross-Tab Consistency:** Syncs auth sessions, active conversations, messages, deletions, and theme mode across browser tabs.
+- **Modern Accessible UI:** Material UI with Dark/Light themes, `Full`/`Medium`/`Mobile` width switcher, skeleton loaders, animated AI status, top-center toasts, copy and read-aloud, voice-to-text, and keyboard/screen-reader accessibility.
+- **Logging & Docker:** Structured HTTP/error logging and multi-stage Docker + Docker Compose setup.
 
 ## Live Demo
 - **Frontend:** _(Add link after deployment)_
 - **Backend API:** _(Add link after deployment)_
 
 ## Tech Stack
-- **Frontend:** React (Vite), Axios/Fetch
-- **Backend:** Node.js, Express
-- **Database:** MongoDB Atlas (Mongoose)
+- **Frontend:** React, Vite, TypeScript (`.tsx`), Material UI, Axios
+- **Backend:** Node.js, Express, TypeScript
+- **Database:** MongoDB (Mongoose)
 - **Authentication:** JWT + bcrypt
-- **AI Provider:** OpenRouter.ai / Hugging Face
+- **AI Provider:** OpenAI-compatible API (Google Gemini / Hugging Face / Groq / OpenRouter)
 - **DevOps:** Docker & Docker Compose
 
 ## Project Structure
-- `client/` — React frontend
-- `server/` — Node.js + Express REST API
-- `docs/` — Architecture & design notes
-- `docker-compose.yml` — Multi-container local setup
+- `client/`: React + TypeScript frontend
+- `server/`: Node.js + Express + TypeScript REST/SSE API
+- `docs/`: Architecture & design notes
+- `docker-compose.yml`: Multi-container local setup
 
 ## Environment Variables
 Copy the example files and fill in your credentials:
-- `server/.env.example` → `server/.env`
-- `client/.env.example` → `client/.env`
+- `server/.env.example` to `server/.env`
+- `client/.env.example` to `client/.env`
 
 ## Running with Docker (Recommended)
 ```bash
@@ -46,5 +54,5 @@ npm run dev
 ```
 
 ## Documentation
-- [Architecture Notes](./docs/main_architecture.md)
-
+- [Auth Architecture](./docs/auth/architecture.md)
+- [Chat Architecture](./docs/chat/architecture.md)
